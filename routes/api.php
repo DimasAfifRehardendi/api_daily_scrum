@@ -8,7 +8,7 @@ Route::post('register', 'UserController@store'); //create petugas
 
 
 Route::group(['middleware' => ['jwt.verify']], function () {
-    Route::delete('delete/{id}', "UserController@delete"); //delete poin
+    Route::delete('user/{id}', "UserController@delete"); //delete poin
     Route::get('user/{id}', 'UserController@index'); //mencari user berdasarkan id
     Route::get('user/{limit}/{offset}', "UserController@getAll"); //menampilkan all user
 	Route::post('logout', "UserController@logout"); //cek token
