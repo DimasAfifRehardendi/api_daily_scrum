@@ -11,11 +11,17 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::delete('user/{id}', "UserController@delete"); //delete poin
     Route::get('user/{id}', 'UserController@index'); //mencari user berdasarkan id
     Route::get('user/{limit}/{offset}', "UserController@getAll"); //menampilkan all user
-	Route::post('logout', "UserController@logout"); //cek token
+    Route::post('logout', "UserController@logout"); //cek token
+    Route::get('login/check', "UserController@LoginCheck");
     
     Route::get('daily/{id}', "DailyController@index"); //read daily
     Route::get('daily/{limit}/{offset}', "DailyController@getAll"); //read daily
 	Route::post('daily', 'DailyController@store'); //create daily
 	Route::delete('daily/{id}', "DailyController@delete"); //delete daily
 
+
+});
+
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
 });

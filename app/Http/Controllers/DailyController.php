@@ -19,20 +19,22 @@ class DailyController extends Controller
             $data["count"] = daily::count();
 	        $daily = array();
 	        $dataDailyScrum = DB::table('daily')->join('user','user.id','=','daily.id_user')
-                                               ->select('daily.id', 'user.firstname', 'user.lastname', 'daily.team', 'daily.activity_yesterday', 'daily.activity_today', 'daily.problem_yesterday', 'daily.solution')
-                                               ->where('daily.id_user','=', $id)
-	                                           ->get();
+                                               ->select('daily.id', 'user.firstname', 'user.lastname', 'daily.team', 'daily.activity_yesterday', 'daily.activity_today', 'daily.problem_yesterday', 'daily.solution', 'daily.date')
+											   ->where('daily.id_user','=', $id)
+											   ->get();
+											   
 
 	        foreach ($dataDailyScrum as $p) {
 	            $item = [
-	                "id"          		=> $p->id,
+					"id"          		=> $p->id,
+					"team"    	  		=> $p->team,
 	                "firstname"  		=> $p->firstname,
 	                "lastname"  		=> $p->lastname,
-	                "team"    	  		=> $p->team,
 	                "activity_yesterday"  => $p->activity_yesterday,
 	                "activity_today"  		=> $p->activity_today,
 	                "problem_yesterday"  			=> $p->problem_yesterday,
-	                "solution" 			=> $p->solution
+	                "solution" 			=> $p->solution,
+	                "date" 			=> $p->date
 	            ];
 
 	            array_push($daily, $item);
@@ -55,39 +57,6 @@ class DailyController extends Controller
       	}
     }
 
-    public function getAll($limit = 10, $offset = 0){
-        try{
-            $data["count"] = daily::count();
-	        $daily = array();
-	        $dataDailyScrum = DB::table('daily')->join('user','user.id','=','daily.id_user')
-                                               ->select('daily.id', 'user.firstname', 'user.lastname', 'daily.team', 'daily.activity_yesterday', 'daily.activity_today', 'daily.problem_yesterday', 'daily.solution')
-	                                           ->get();
-
-	        foreach ($dataDailyScrum as $p) {
-	            $item = [
-	                "id"          		=> $p->id,
-	                "firstname"  		=> $p->firstname,
-	                "lastname"  		=> $p->lastname,
-	                "team"    	  		=> $p->team,
-	                "activity_yesterday"  => $p->activity_yesterday,
-	                "activity_today"  		=> $p->activity_today,
-	                "problem_yesterday"  			=> $p->problem_yesterday,
-	                "solution" 			=> $p->solution
-	            ];
-
-	            array_push($daily, $item);
-	        }
-	        $data["daily"] = $daily;
-	        $data["status"] = 1;
-	        return response($data);
-	    } catch(\Exception $e){
-			return response()->json([
-			  'status' => '0',
-			  'message' => $e->getMessage()
-			]);
-      	}
-    }
-
     public function store(Request $request)
     {
       try{
@@ -98,6 +67,7 @@ class DailyController extends Controller
   				'activity_today'		=> 'required|string',
   				'problem_yesterday'		=> 'required|string',
   				'solution'		=> 'required|string',
+  				'date'		=> 'required|string',
     		]);
 
     		if($validator->fails()){
@@ -116,11 +86,12 @@ class DailyController extends Controller
 			        $data->activity_today = $request->input('activity_today');
 			        $data->problem_yesterday = $request->input('problem_yesterday');
 			        $data->solution = $request->input('solution');
+			        $data->date = $request->input('date');
 			        $data->save();
 
 		    		return response()->json([
 		    			'status'	=> '1',
-		    			'message'	=> 'Data User berhasil ditambahkan!'
+		    			'message'	=> 'Data berhasil ditambahkan!'
 		    		], 201);
     		} else {
     			return response()->json([
@@ -147,12 +118,12 @@ class DailyController extends Controller
               if($delete){
                 return response([
                   "status"  => 1,
-                    "message"   => "Data User berhasil dihapus."
+                    "message"   => "Data berhasil dihapus."
                 ]);
               } else {
                 return response([
                   "status"  => 0,
-                    "message"   => "Data User Gagal dihapus."
+                    "message"   => "Data poin pelanggaran gagal dihapus."
                 ]);
               }
               
